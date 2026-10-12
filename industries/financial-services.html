@@ -1,0 +1,108 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width,initial-scale=1">
+<title>Financial services migration | Cutover</title>
+<meta name="description" content="Migrate banking, payments and reporting systems with Cutover. Evidence-based plans for PCI DSS, SOX and GLBA environments.">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Bricolage+Grotesque:opsz,wght@12..96,600..800&family=DM+Sans:wght@400;500;700&family=JetBrains+Mono:wght@500&display=swap" rel="stylesheet">
+<link rel="stylesheet" href="../styles.css">
+<script src="../site.js" defer></script>
+</head>
+<body>
+<header class="nav">
+  <div class="wrap nav-in">
+    <a class="brand" href="../index.html"><span class="logo">C</span>Cutover</a>
+    <nav class="links" aria-label="Main">
+      <a href="../index.html#how">How it works</a>
+      <a href="index.html" aria-current="page">Industries</a>
+      <a href="../security.html">Security</a>
+      <a class="btn" data-demo-link>Try the demo</a>
+    </nav>
+  </div>
+</header>
+
+<main>
+  <div class="wrap ihero">
+    <p class="eyebrow">Industry: Financial services</p>
+    <h1>Modernize core banking and payments without losing control of the audit trail.</h1>
+    <p class="lead">Banks, lenders and payment processors run systems where a single bad transaction costs real money and regulators ask hard questions. Cutover builds the migration evidence first, so changes are approved before they reach production.</p>
+    <div class="row" style="margin-top:12px">
+      <a class="btn" data-demo-link>Try the demo</a>
+      <a class="btn ghost" data-contact>Book a discovery call</a>
+    </div>
+  </div>
+
+  <section class="band">
+    <div class="wrap">
+      <h2>Where financial migrations get stuck</h2>
+      <div class="grid" style="margin-top:28px">
+        <div class="card"><h3>Batch jobs nobody owns</h3><p class="muted" style="margin-top:8px">Overnight settlement and reconciliation jobs are often undocumented. Cutover traces their schedules, inputs and outputs from the code and the scheduler.</p></div>
+        <div class="card"><h3>Cardholder data in scope</h3><p class="muted" style="margin-top:8px">PCI DSS scope grows when systems move. Cutover maps which components touch cardholder data before the design is locked.</p></div>
+        <div class="card"><h3>Reporting must not break</h3><p class="muted" style="margin-top:8px">Regulatory and internal reports depend on fields that move between systems. Data lineage shows which reports change, and which do not.</p></div>
+      </div>
+    </div>
+  </section>
+
+  <section>
+    <div class="wrap" style="display:grid;gap:36px;grid-template-columns:1fr 1fr;align-items:start">
+      <div>
+        <h2>What Cutover produces</h2>
+        <ul class="check" style="margin-top:20px">
+          <li>Inventory of applications, batch jobs and integration points</li>
+          <li>Data flow map showing where sensitive fields are stored and moved</li>
+          <li>Change plan with segregation of duties built into the approval steps</li>
+          <li>Terraform for the chosen target, with network isolation and key management</li>
+          <li>Signed report for SOX and internal audit, with a plan hash and rollback steps</li>
+        </ul>
+      </div>
+      <div class="card">
+        <p class="eyebrow">Typical scope</p>
+        <div class="tbl-wrap" style="margin-top:12px">
+          <table class="tbl">
+            <thead><tr><th>Workload</th><th>Common approach</th></tr></thead>
+            <tbody>
+              <tr><td>Payment gateway</td><td>Re-platform with a staged traffic shift</td></tr>
+              <tr><td>Core ledger</td><td>Plan in phases with reconciliation checks</td></tr>
+              <tr><td>Reporting warehouse</td><td>Move data, then re-point reports</td></tr>
+              <tr><td>Customer portal</td><td>Re-platform to managed containers</td></tr>
+            </tbody>
+          </table>
+        </div>
+      </div>
+    </div>
+  </section>
+
+  <section class="band">
+    <div class="wrap">
+      <h2>Controls for financial teams</h2>
+      <div class="grid" style="margin-top:28px">
+        <div class="card"><h3>PCI DSS alignment</h3><p class="muted" style="margin-top:8px">Scope mapping and network segmentation designed around the standard. Your QSA confirms the final assessment.</p></div>
+        <div class="card"><h3>SOX-ready evidence</h3><p class="muted" style="margin-top:8px">Approvals, plan hashes and change records kept in an audit log that auditors can export.</p></div>
+        <div class="card"><h3>Separation of duties</h3><p class="muted" style="margin-top:8px">The person who builds a change cannot approve it for production.</p></div>
+      </div>
+    </div>
+  </section>
+
+  <section class="tight">
+    <div class="wrap">
+      <div class="cta">
+        <h2>See the approval workflow in action.</h2>
+        <p>The demo shows how a plan moves from analysis to a signed approval, with every step recorded.</p>
+        <div class="row" style="justify-content:center">
+          <a class="btn" data-demo-link>Try the demo</a>
+          <a class="btn ghost" data-contact>Talk to our financial services team</a>
+        </div>
+      </div>
+    </div>
+  </section>
+</main>
+<footer>
+  <div class="wrap foot">
+    <div>© <span data-year></span> Cutover</div>
+    <nav><a href="index.html">All industries</a><a href="../index.html">Home</a><a data-contact-text>hello@cutover.site</a></nav>
+  </div>
+</footer>
+</body>
+</html>

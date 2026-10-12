@@ -1,0 +1,108 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width,initial-scale=1">
+<title>Retail and e-commerce migration | Cutover</title>
+<meta name="description" content="Migrate storefront, order and point-of-sale systems with Cutover. Plan cutovers around peak seasons and PCI DSS scope.">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Bricolage+Grotesque:opsz,wght@12..96,600..800&family=DM+Sans:wght@400;500;700&family=JetBrains+Mono:wght@500&display=swap" rel="stylesheet">
+<link rel="stylesheet" href="../styles.css">
+<script src="../site.js" defer></script>
+</head>
+<body>
+<header class="nav">
+  <div class="wrap nav-in">
+    <a class="brand" href="../index.html"><span class="logo">C</span>Cutover</a>
+    <nav class="links" aria-label="Main">
+      <a href="../index.html#how">How it works</a>
+      <a href="index.html" aria-current="page">Industries</a>
+      <a href="../security.html">Security</a>
+      <a class="btn" data-demo-link>Try the demo</a>
+    </nav>
+  </div>
+</header>
+
+<main>
+  <div class="wrap ihero">
+    <p class="eyebrow">Industry: Retail and e-commerce</p>
+    <h1>Migrate your commerce stack without a bad week in peak season.</h1>
+    <p class="lead">Retailers run storefronts, order management and point-of-sale systems that must hold under peak traffic. Cutover plans each move around your trading calendar and shows which checkout and payment paths change.</p>
+    <div class="row" style="margin-top:12px">
+      <a class="btn" data-demo-link>Try the demo</a>
+      <a class="btn ghost" data-contact>Book a discovery call</a>
+    </div>
+  </div>
+
+  <section class="band">
+    <div class="wrap">
+      <h2>Where retail migrations get stuck</h2>
+      <div class="grid" style="margin-top:28px">
+        <div class="card"><h3>Peak-season freezes</h3><p class="muted" style="margin-top:8px">Holiday and sale windows rule out risky changes. Cutover builds the plan around the calendar you have.</p></div>
+        <div class="card"><h3>Checkout and payments</h3><p class="muted" style="margin-top:8px">Payment flows touch cardholder data. Cutover maps PCI DSS scope before any design is locked.</p></div>
+        <div class="card"><h3>Store and channel sync</h3><p class="muted" style="margin-top:8px">Inventory and orders move between stores and online channels. Cutover traces every sync job and its dependencies.</p></div>
+      </div>
+    </div>
+  </section>
+
+  <section>
+    <div class="wrap" style="display:grid;gap:36px;grid-template-columns:1fr 1fr;align-items:start">
+      <div>
+        <h2>What Cutover produces</h2>
+        <ul class="check" style="margin-top:20px">
+          <li>Inventory of storefront, order, inventory and POS applications</li>
+          <li>Integration map for payment, shipping and marketplace feeds</li>
+          <li>Cutover schedule with trading-calendar freeze windows</li>
+          <li>Terraform for the target, with autoscaling and private networking</li>
+          <li>Signed report with rollback steps for each checkout path</li>
+        </ul>
+      </div>
+      <div class="card">
+        <p class="eyebrow">Typical scope</p>
+        <div class="tbl-wrap" style="margin-top:12px">
+          <table class="tbl">
+            <thead><tr><th>Workload</th><th>Common approach</th></tr></thead>
+            <tbody>
+              <tr><td>Storefront</td><td>Re-platform with a staged traffic shift</td></tr>
+              <tr><td>Order management</td><td>Parallel run, then cut over by region</td></tr>
+              <tr><td>Point of sale</td><td>Phased rollout by store group</td></tr>
+              <tr><td>Analytics</td><td>Move data first, then re-point dashboards</td></tr>
+            </tbody>
+          </table>
+        </div>
+      </div>
+    </div>
+  </section>
+
+  <section class="band">
+    <div class="wrap">
+      <h2>Built for commerce teams</h2>
+      <div class="grid" style="margin-top:28px">
+        <div class="card"><h3>PCI DSS scope mapping</h3><p class="muted" style="margin-top:8px">Scope is documented before design. Your QSA confirms the final assessment.</p></div>
+        <div class="card"><h3>Trading-calendar planning</h3><p class="muted" style="margin-top:8px">Freeze periods are built into the schedule, with approvals required to override them.</p></div>
+        <div class="card"><h3>Staged rollout</h3><p class="muted" style="margin-top:8px">Move by region, store group or channel, and keep the old path ready until each stage is confirmed.</p></div>
+      </div>
+    </div>
+  </section>
+
+  <section class="tight">
+    <div class="wrap">
+      <div class="cta">
+        <h2>Plan the cutover around your busiest week.</h2>
+        <p>Try the demo to see how a commerce migration plan is built and approved.</p>
+        <div class="row" style="justify-content:center">
+          <a class="btn" data-demo-link>Try the demo</a>
+          <a class="btn ghost" data-contact>Talk to our retail team</a>
+        </div>
+      </div>
+    </div>
+  </section>
+</main>
+<footer>
+  <div class="wrap foot">
+    <div>© <span data-year></span> Cutover</div>
+    <nav><a href="index.html">All industries</a><a href="../index.html">Home</a><a data-contact-text>hello@cutover.site</a></nav>
+  </div>
+</footer>
+</body>
+</html>
