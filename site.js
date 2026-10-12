@@ -5,6 +5,8 @@ const CUTOVER = {
   demoUrl: 'cutover-demo/index.html',
   // Sales and discovery-call contact.
   contactEmail: 'hello@cutover.site',
+  // Where contact emails are delivered. Shown text stays as contactEmail.
+  contactInbox: 'ebizmatrix@gmail.com',
   // Hide the demo buttons by setting this to false.
   showDemo: true
 };
@@ -18,7 +20,7 @@ document.addEventListener('DOMContentLoaded', () => {
     if (!CUTOVER.showDemo) el.hidden = true;
   });
   document.querySelectorAll('[data-contact]').forEach(el => {
-    el.setAttribute('href', `mailto:${CUTOVER.contactEmail}?subject=${encodeURIComponent('Cutover discovery call')}`);
+    el.setAttribute('href', `mailto:${CUTOVER.contactInbox}?subject=${encodeURIComponent('Cutover discovery call')}`);
   });
   document.querySelectorAll('[data-contact-text]').forEach(el => {
     el.textContent = CUTOVER.contactEmail;
