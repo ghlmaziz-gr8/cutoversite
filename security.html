@@ -1,0 +1,99 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width,initial-scale=1">
+<title>Security | Cutover</title>
+<meta name="description" content="How Cutover protects customer code, infrastructure access and migration data: read-only discovery, redaction, approvals and audit logging.">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Bricolage+Grotesque:opsz,wght@12..96,600..800&family=DM+Sans:wght@400;500;700&family=JetBrains+Mono:wght@500&display=swap" rel="stylesheet">
+<link rel="stylesheet" href="styles.css">
+<style>
+  .doc{max-width:760px}
+  .doc h2{font-size:clamp(22px,3.4vw,28px);margin-top:44px}
+  .doc h3{font-size:18px;margin-top:26px}
+  .doc p,.doc li{margin-top:12px}
+  .doc ul{padding-left:20px;margin:12px 0 0}
+  .doc li{margin-top:8px}
+  .draft{margin-top:20px;padding:14px 18px;border-radius:14px;border:1px dashed var(--warn);font-size:14px;color:var(--muted)}
+  .pillars{display:grid;gap:16px;grid-template-columns:repeat(auto-fit,minmax(min(100%,240px),1fr));margin-top:28px}
+</style>
+<script src="site.js" defer></script>
+</head>
+<body>
+<header class="nav">
+  <div class="wrap nav-in">
+    <a class="brand" href="index.html"><span class="logo">C</span>Cutover</a>
+    <nav class="links" aria-label="Main">
+      <a href="index.html#how">How it works</a>
+      <a href="industries/index.html">Industries</a>
+      <a href="security.html" aria-current="page">Security</a>
+      <a class="btn" data-demo-link>Try the demo</a>
+    </nav>
+  </div>
+</header>
+
+<main>
+  <div class="wrap ihero">
+    <p class="eyebrow">Security</p>
+    <h1>Read-only by default. Approved before anything changes.</h1>
+    <p class="lead">Cutover analyzes your applications, data and infrastructure to plan a migration. This page explains how we protect that access, what we never do with it, and what your security team can verify.</p>
+  </div>
+
+  <section style="padding-top:20px">
+    <div class="wrap">
+      <div class="pillars">
+        <div class="card"><h3>Read-only discovery</h3><p class="muted" style="margin-top:8px">Analysis reads code, configuration and infrastructure state. It never writes to your live systems.</p></div>
+        <div class="card"><h3>Pinned sources</h3><p class="muted" style="margin-top:8px">Every analysis runs against a fixed commit, so results can be reproduced and checked later.</p></div>
+        <div class="card"><h3>Named approvals</h3><p class="muted" style="margin-top:8px">A named person approves each plan. Approval records the plan hash and the time.</p></div>
+        <div class="card"><h3>Audit logging</h3><p class="muted" style="margin-top:8px">Analysis runs, approvals and changes are logged in an audit trail you can export.</p></div>
+      </div>
+    </div>
+  </section>
+
+  <section class="band">
+    <div class="wrap doc">
+      <h2>Access and discovery</h2>
+      <p>You choose what Cutover can read. Source access is granted to a specific repository and commit. Infrastructure access is read-only and limited to the resources in scope for the migration. You can revoke either at any time.</p>
+      <ul>
+        <li>Discovery never deploys, modifies or deletes resources.</li>
+        <li>Each analysis is tied to a pinned commit and a recorded configuration snapshot.</li>
+        <li>Access credentials are scoped to the migration and can be rotated or removed by your team.</li>
+      </ul>
+
+      <h2>Protecting sensitive data</h2>
+      <p>Sensitive samples, such as HL7 message logs or database extracts, are redacted before any analysis runs. Redaction is required for those inputs and cannot be turned off in the product. Findings are shown as verified (found in code or configuration) or inferred (reasoned from patterns and flagged for review).</p>
+      <ul>
+        <li>Identifiers are removed from samples before they are analyzed.</li>
+        <li>Customer code and data are not used to train models.</li>
+        <li>Data residency and storage locations are agreed during discovery and documented in the plan.</li>
+      </ul>
+
+      <h2>Approvals and change control</h2>
+      <p>Nothing reaches your environment until a named approver signs the plan. The approval records who signed, when, and the hash of the exact plan that was approved. Staging can be applied after approval. Production requires a separate, explicit sign-off.</p>
+
+      <h2>Encryption and infrastructure</h2>
+      <p>Data is encrypted in transit using TLS. Data at rest is encrypted using [encryption standard, e.g. AES-256, to be confirmed]. Key management, network isolation and access controls are described in the architecture review we provide during discovery.</p>
+
+      <h2>Healthcare and regulated workloads</h2>
+      <p>For healthcare customers handling protected health information, we sign a Business Associate Agreement (BAA) before any such data is processed. For financial, government and other regulated customers, we map the platform's controls to your framework during discovery. Your compliance team confirms the final scope.</p>
+
+      <h2>Certifications and reports</h2>
+      <p>[Add the certifications and attestations Cutover holds, with report dates, for example SOC 2 Type II. Remove this line if none are held yet.]</p>
+
+      <h2>Report a security issue</h2>
+      <p>If you believe you have found a vulnerability in Cutover, email <a href="mailto:ebizmatrix@gmail.com">ebizmatrix@gmail.com</a>. Please give us a reasonable chance to fix the issue before sharing details publicly. We do not pursue legal action against researchers who act in good faith.</p>
+
+      <div class="draft">Draft for review. Confirm each statement against the product and your controls before publishing, and have legal counsel review the page.</div>
+    </div>
+  </section>
+</main>
+
+<footer>
+  <div class="wrap foot">
+    <div>© <span data-year></span> Cutover</div>
+    <nav><a href="privacy.html">Privacy</a><a href="terms.html">Terms</a><a href="industries/index.html">Industries</a><a data-contact-text>hello@cutover.site</a></nav>
+  </div>
+</footer>
+</body>
+</html>
