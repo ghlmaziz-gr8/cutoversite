@@ -33,9 +33,6 @@
     { q: 'Does it produce Terraform?',
       a: 'After the intake is confirmed, a platform engineer can make a Terraform draft for Google Cloud, AWS or Azure. Each draft is marked DRAFT, lists the inputs it used, and is kept as a numbered version.',
       k: ['terraform', 'cloud', 'infrastructure', 'gcp', 'aws', 'azure'] },
-    { q: 'Who makes Cutover?',
-      a: 'Cutover is powered by Datorian.',
-      k: ['datorian', 'who', 'company', 'made', 'builds'] },
     { q: 'How do I see the demo?',
       a: 'Use the Try the demo button on this page. It runs on synthetic sample data and needs no sign-up.',
       k: ['demo', 'try', 'sample', 'example', 'preview'] }
