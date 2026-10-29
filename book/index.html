@@ -1,0 +1,215 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width,initial-scale=1">
+<meta name="robots" content="noindex,nofollow">
+<title>Book your Cutover meeting</title>
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Bricolage+Grotesque:opsz,wght@12..96,600..800&family=DM+Sans:wght@400;500;700&display=swap" rel="stylesheet">
+<link rel="stylesheet" href="../styles.css">
+<style>
+  .book-wrap{max-width:720px;margin:0 auto;padding:40px 16px 64px}
+  .book-card{background:var(--card, #fff);border:1px solid var(--line, #e7e2f3);border-radius:22px;padding:28px;box-shadow:0 30px 70px -40px rgba(29,22,64,.4)}
+  .book-hero{background:linear-gradient(135deg,#6d28d9,#db2777,#f97316);color:#fff;border-radius:22px;padding:28px;margin-bottom:18px}
+  .book-hero h1{margin:6px 0 0;font-size:28px;line-height:1.2}
+  .book-hero p{margin:10px 0 0;opacity:.95;line-height:1.5}
+  .eyebrow-b{font-size:12px;letter-spacing:3px;text-transform:uppercase;opacity:.9;margin:0}
+  .day{margin-top:18px}
+  .day h3{font-size:16px;margin:0 0 8px}
+  .slots{display:flex;flex-wrap:wrap;gap:8px}
+  .slot{border:1px solid #d9d2ee;background:#faf8ff;color:#1d1640;border-radius:999px;padding:10px 14px;font:inherit;cursor:pointer}
+  .slot[aria-pressed="true"],.slot:hover{background:#1d1640;color:#fff;border-color:#1d1640}
+  .fields{display:grid;grid-template-columns:1fr 1fr;gap:10px;margin-top:14px}
+  .fields label{display:flex;flex-direction:column;font-size:14px;gap:4px}
+  .fields .wide{grid-column:1/-1}
+  .fields input{font:inherit;padding:11px 12px;border-radius:12px;border:1px solid #d9d2ee}
+  .go{margin-top:16px;background:#1d1640;color:#fff;border:0;border-radius:999px;padding:14px 26px;font:inherit;font-weight:700;cursor:pointer}
+  .go:disabled{opacity:.5;cursor:default}
+  .note{font-size:13px;color:#6b6585;line-height:1.5}
+  .err{color:#b42318;font-weight:600}
+  .ok{background:#f0fdf8;border:1px solid #bbf7e4;border-radius:16px;padding:18px}
+  @media (max-width:560px){.fields{grid-template-columns:1fr}}
+</style>
+</head>
+<body>
+<main class="book-wrap">
+  <section class="book-hero" aria-live="polite">
+    <p class="eyebrow-b">Cutover</p>
+    <h1 id="heroTitle">Book your meeting</h1>
+    <p id="heroText">Checking your link…</p>
+  </section>
+
+  <section class="book-card" id="bookCard" hidden>
+    <div id="slotsPanel" hidden>
+      <p class="note" id="zoneNote"></p>
+      <div id="days"></div>
+    </div>
+
+    <form id="bookForm" hidden novalidate>
+      <p class="note" id="chosenText"></p>
+      <div class="fields">
+        <label>First name<input name="first_name" required maxlength="80" autocomplete="given-name"></label>
+        <label>Last name<input name="last_name" required maxlength="80" autocomplete="family-name"></label>
+        <label class="wide">Email<input name="email" type="email" required maxlength="320" autocomplete="email"></label>
+        <label>Company<input name="company" required maxlength="120" autocomplete="organization"></label>
+        <label>Phone (optional)<input name="phone" type="tel" maxlength="30" autocomplete="tel"></label>
+      </div>
+      <button type="submit" class="go" id="goBtn">Confirm my meeting</button>
+    </form>
+
+    <p class="err" id="errMsg" role="alert" hidden></p>
+    <div class="ok" id="doneBox" hidden></div>
+  </section>
+
+  <p class="note" style="text-align:center;margin-top:18px">
+    This page is for the meeting you were invited to. This inbox is unattended, so please do not reply to the invitation email.
+  </p>
+</main>
+
+<script>
+(() => {
+  const API = "https://cutover-api.ghlmaziz.workers.dev";
+  const params = new URLSearchParams(location.search);
+  const token = params.get("t") || "";
+  const guestZone = Intl.DateTimeFormat().resolvedOptions().timeZone;
+  const $ = (id) => document.getElementById(id);
+
+  const fmtDay = (iso) => new Intl.DateTimeFormat(undefined, { timeZone: guestZone, weekday: "long", month: "long", day: "numeric" }).format(new Date(iso));
+  const fmtTime = (iso) => new Intl.DateTimeFormat(undefined, { timeZone: guestZone, hour: "numeric", minute: "2-digit" }).format(new Date(iso));
+  const fmtFull = (iso) => new Intl.DateTimeFormat(undefined, { timeZone: guestZone, weekday: "long", month: "long", day: "numeric", hour: "numeric", minute: "2-digit", timeZoneName: "short" }).format(new Date(iso));
+
+  function showError(message) {
+    $("errMsg").textContent = message;
+    $("errMsg").hidden = false;
+  }
+  function clearError() {
+    $("errMsg").hidden = true;
+  }
+
+  async function api(path, options = {}) {
+    const res = await fetch(`${API}${path}`, { ...options, headers: { "content-type": "application/json", ...(options.headers || {}) } });
+    const body = await res.json().catch(() => ({}));
+    if (!res.ok) {
+      const err = new Error(body.error || "Something went wrong. Please try again.");
+      err.status = res.status;
+      throw err;
+    }
+    return body;
+  }
+
+  function showDone(message) {
+    $("doneBox").textContent = message;
+    $("doneBox").hidden = false;
+    $("slotsPanel").hidden = true;
+    $("bookForm").hidden = true;
+  }
+
+  function renderSlots(slots) {
+    const days = $("days");
+    days.replaceChildren();
+    if (!slots.length) {
+      days.append(Object.assign(document.createElement("p"), { className: "note", textContent: "No times are free in the next two weeks. Please reply to the invitation email to arrange a time." }));
+      return;
+    }
+    const byDay = new Map();
+    for (const s of slots) {
+      const key = fmtDay(s.start);
+      if (!byDay.has(key)) byDay.set(key, []);
+      byDay.get(key).push(s);
+    }
+    for (const [day, list] of byDay) {
+      const wrap = document.createElement("div");
+      wrap.className = "day";
+      const h = document.createElement("h3");
+      h.textContent = day;
+      const row = document.createElement("div");
+      row.className = "slots";
+      for (const s of list) {
+        const b = document.createElement("button");
+        b.type = "button";
+        b.className = "slot";
+        b.textContent = fmtTime(s.start);
+        b.setAttribute("aria-pressed", "false");
+        b.addEventListener("click", () => choose(s, b));
+        row.append(b);
+      }
+      wrap.append(h, row);
+      days.append(wrap);
+    }
+  }
+
+  let chosen = null;
+  function choose(slot, button) {
+    chosen = slot;
+    document.querySelectorAll(".slot").forEach((b) => b.setAttribute("aria-pressed", String(b === button)));
+    $("chosenText").textContent = `Your meeting: ${fmtFull(slot.start)}`;
+    $("bookForm").hidden = false;
+    $("bookForm").scrollIntoView({ behavior: "smooth", block: "nearest" });
+    clearError();
+  }
+
+  async function start() {
+    if (!token) {
+      $("heroText").textContent = "This page needs the link from your invitation email.";
+      $("bookCard").hidden = true;
+      return;
+    }
+    $("bookCard").hidden = false;
+    let info;
+    try {
+      info = await api(`/api/book/${encodeURIComponent(token)}`);
+    } catch (err) {
+      $("heroText").textContent = err.message;
+      $("bookCard").hidden = true;
+      return;
+    }
+    $("heroTitle").textContent = `Hi ${info.first_name}, book your meeting`;
+    $("heroText").textContent = "Pick a 30-minute time that suits you, then confirm your details.";
+    for (const name of ["first_name", "last_name", "email", "company", "phone"]) {
+      const input = document.querySelector(`[name="${name}"]`);
+      if (input && info[name]) input.value = info[name];
+    }
+
+    if (info.status !== "invited") {
+      $("heroText").textContent = "This meeting is already booked. Look for the confirmation email for the time.";
+      return;
+    }
+
+    $("slotsPanel").hidden = false;
+    $("zoneNote").textContent = `Times are shown in your time zone (${guestZone}). Meetings are offered on weekdays, 9:00 to 17:00, in the Cutover team's time zone.`;
+    try {
+      const data = await api(`/api/book/${encodeURIComponent(token)}/slots`);
+      renderSlots(data.slots);
+    } catch (err) {
+      showError(err.message);
+    }
+  }
+
+  $("bookForm").addEventListener("submit", async (e) => {
+    e.preventDefault();
+    if (!chosen) return showError("Pick a time first.");
+    const form = e.target;
+    if (!form.reportValidity()) return;
+    const payload = Object.fromEntries(new FormData(form).entries());
+    payload.start = chosen.start;
+    $("goBtn").disabled = true;
+    clearError();
+    try {
+      await api(`/api/book/${encodeURIComponent(token)}`, { method: "POST", body: JSON.stringify(payload) });
+      showDone(`Your meeting is booked for ${fmtFull(chosen.start)}. A confirmation has been sent to ${payload.email}. This inbox is unattended, so please do not reply to it.`);
+    } catch (err) {
+      showError(err.message);
+      if (err.status === 409) {
+        document.querySelectorAll(".slot").forEach((b) => (b.disabled = true));
+      }
+    } finally {
+      $("goBtn").disabled = false;
+    }
+  });
+
+  start();
+})();
+</script>
+</body>
+</html>
