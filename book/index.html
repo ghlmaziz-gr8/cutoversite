@@ -28,6 +28,9 @@
   .go:disabled{opacity:.5;cursor:default}
   .note{font-size:13px;color:#6b6585;line-height:1.5}
   .err{color:#b42318;font-weight:600}
+  .actions{display:flex;flex-wrap:wrap;gap:10px;margin-top:14px;align-items:center}
+  .ghost-btn{background:transparent;color:#1d1640;border:1px solid #d9d2ee;border-radius:999px;padding:13px 22px;font:inherit;font-weight:700;cursor:pointer}
+  #confirmCancel{margin-top:16px}
   .ok{background:#f0fdf8;border:1px solid #bbf7e4;border-radius:16px;padding:18px}
   @media (max-width:560px){.fields{grid-template-columns:1fr}}
 </style>
@@ -44,6 +47,19 @@
     <div id="slotsPanel" hidden>
       <p class="note" id="zoneNote"></p>
       <div id="days"></div>
+    </div>
+
+    <div id="bookedPanel" hidden>
+      <p class="note" id="bookedText"></p>
+      <div class="actions">
+        <button type="button" class="go" id="changeBtn">Change my time</button>
+        <button type="button" class="ghost-btn" id="cancelBtn">Cancel my meeting</button>
+      </div>
+      <div id="confirmCancel" hidden>
+        <p class="note">Cancel this meeting? The time will be released, and you can book a new one any time.</p>
+        <button type="button" class="go" id="confirmCancelBtn">Yes, cancel my meeting</button>
+        <button type="button" class="ghost-btn" id="keepBtn">Keep my meeting</button>
+      </div>
     </div>
 
     <form id="bookForm" hidden novalidate>
@@ -103,6 +119,23 @@
     $("doneBox").hidden = false;
     $("slotsPanel").hidden = true;
     $("bookForm").hidden = true;
+    $("bookedPanel").hidden = true;
+    $("heroText").textContent = "";
+  }
+
+  // Shows the free times and the details form, for a new booking or a change.
+  async function showTimes(moving) {
+    $("bookedPanel").hidden = true;
+    $("slotsPanel").hidden = false;
+    $("zoneNote").textContent = `Times are shown in your time zone (${guestZone}). Meetings are offered on weekdays, 9:00 to 17:00, in the Cutover team's time zone.`;
+    $("goBtn").textContent = moving ? "Move my meeting" : "Confirm my meeting";
+    $("goBtn").dataset.moving = moving ? "1" : "";
+    try {
+      const data = await api(`/api/book/${encodeURIComponent(token)}/slots`);
+      renderSlots(data.slots);
+    } catch (err) {
+      showError(err.message);
+    }
   }
 
   function renderSlots(slots) {
@@ -171,20 +204,40 @@
       if (input && info[name]) input.value = info[name];
     }
 
-    if (info.status !== "invited") {
-      $("heroText").textContent = "This meeting is already booked. Look for the confirmation email for the time.";
+    if (info.status === "booked") {
+      $("heroText").textContent = "Your meeting is booked. You can change the time or cancel it below.";
+      $("bookedText").textContent = `Your meeting: ${fmtFull(info.meeting_at)}`;
+      $("bookedPanel").hidden = false;
       return;
     }
+    if (info.status === "cancelled") {
+      $("heroText").textContent = "Your meeting was cancelled. Pick a new time below.";
+    } else if (info.status !== "invited") {
+      $("heroText").textContent = "This meeting can no longer be changed. Please contact the Cutover team.";
+      return;
+    }
+    await showTimes(false);
+  }
 
-    $("slotsPanel").hidden = false;
-    $("zoneNote").textContent = `Times are shown in your time zone (${guestZone}). Meetings are offered on weekdays, 9:00 to 17:00, in the Cutover team's time zone.`;
+  $("changeBtn").addEventListener("click", () => showTimes(true));
+  $("cancelBtn").addEventListener("click", () => {
+    $("confirmCancel").hidden = false;
+  });
+  $("keepBtn").addEventListener("click", () => {
+    $("confirmCancel").hidden = true;
+  });
+  $("confirmCancelBtn").addEventListener("click", async () => {
+    $("confirmCancelBtn").disabled = true;
+    clearError();
     try {
-      const data = await api(`/api/book/${encodeURIComponent(token)}/slots`);
-      renderSlots(data.slots);
+      await api(`/api/book/${encodeURIComponent(token)}/cancel`, { method: "POST" });
+      showDone("Your meeting has been cancelled. You will get a confirmation email. You can book a new time with the link in the email.");
     } catch (err) {
       showError(err.message);
+    } finally {
+      $("confirmCancelBtn").disabled = false;
     }
-  }
+  });
 
   $("bookForm").addEventListener("submit", async (e) => {
     e.preventDefault();
@@ -196,8 +249,9 @@
     $("goBtn").disabled = true;
     clearError();
     try {
-      await api(`/api/book/${encodeURIComponent(token)}`, { method: "POST", body: JSON.stringify(payload) });
-      showDone(`Your meeting is booked for ${fmtFull(chosen.start)}. A confirmation has been sent to ${payload.email}. This inbox is unattended, so please do not reply to it.`);
+      const result = await api(`/api/book/${encodeURIComponent(token)}`, { method: "POST", body: JSON.stringify(payload) });
+      const verb = result.moved ? "has moved to" : "is booked for";
+      showDone(`Your meeting ${verb} ${fmtFull(chosen.start)}. A confirmation has been sent to ${payload.email}. This inbox is unattended, so please do not reply to it.`);
     } catch (err) {
       showError(err.message);
       if (err.status === 409) {
