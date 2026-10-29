@@ -14,6 +14,7 @@
   .book-hero{background:linear-gradient(135deg,#6d28d9,#db2777,#f97316);color:#fff;border-radius:22px;padding:28px;margin-bottom:18px}
   .book-hero h1{margin:6px 0 0;font-size:28px;line-height:1.2}
   .book-hero p{margin:10px 0 0;opacity:.95;line-height:1.5}
+  .book-hero .tagline{margin:18px 0 0;padding:12px 16px;border-left:3px solid rgba(255,255,255,.8);background:rgba(255,255,255,.12);border-radius:0 12px 12px 0;font-size:16px;font-style:italic;line-height:1.5}
   .eyebrow-b{font-size:12px;letter-spacing:3px;text-transform:uppercase;opacity:.9;margin:0}
   .day{margin-top:18px}
   .day h3{font-size:16px;margin:0 0 8px}
@@ -41,6 +42,7 @@
     <p class="eyebrow-b">Cutover</p>
     <h1 id="heroTitle">Book your meeting</h1>
     <p id="heroText">Checking your link…</p>
+    <blockquote class="tagline">“Move critical systems to the cloud with a plan you can verify first”</blockquote>
   </section>
 
   <section class="book-card" id="bookCard" hidden>
@@ -114,12 +116,13 @@
     return body;
   }
 
-  function showDone(message) {
+  function showDone(message, title) {
     $("doneBox").textContent = message;
     $("doneBox").hidden = false;
     $("slotsPanel").hidden = true;
     $("bookForm").hidden = true;
     $("bookedPanel").hidden = true;
+    if (title) $("heroTitle").textContent = title;
     $("heroText").textContent = "";
   }
 
@@ -173,6 +176,8 @@
   }
 
   let chosen = null;
+  let hostName = "the Cutover team";
+  let firstName = "";
   function choose(slot, button) {
     chosen = slot;
     document.querySelectorAll(".slot").forEach((b) => b.setAttribute("aria-pressed", String(b === button)));
@@ -197,7 +202,9 @@
       $("bookCard").hidden = true;
       return;
     }
-    $("heroTitle").textContent = `Hi ${info.first_name}, book your meeting`;
+    hostName = info.host_name || "the Cutover team";
+    firstName = info.first_name;
+    $("heroTitle").textContent = `Hey ${info.first_name}, book your meeting to review Cutover AI modernization with ${hostName}.`;
     $("heroText").textContent = "Pick a 30-minute time that suits you, then confirm your details.";
     for (const name of ["first_name", "last_name", "email", "company", "phone"]) {
       const input = document.querySelector(`[name="${name}"]`);
@@ -205,7 +212,8 @@
     }
 
     if (info.status === "booked") {
-      $("heroText").textContent = "Your meeting is booked. You can change the time or cancel it below.";
+      $("heroTitle").textContent = `Hey ${info.first_name}, your meeting to review Cutover AI modernization with ${hostName} is booked.`;
+      $("heroText").textContent = "You can change the time or cancel it below.";
       $("bookedText").textContent = `Your meeting: ${fmtFull(info.meeting_at)}`;
       $("bookedPanel").hidden = false;
       return;
@@ -231,7 +239,7 @@
     clearError();
     try {
       await api(`/api/book/${encodeURIComponent(token)}/cancel`, { method: "POST" });
-      showDone("Your meeting has been cancelled. You will get a confirmation email. You can book a new time with the link in the email.");
+      showDone(`You will get a confirmation email, and you can book a new time with the link in it.`, `Hey ${firstName}, your meeting to review Cutover AI modernization with ${hostName} has been cancelled.`);
     } catch (err) {
       showError(err.message);
     } finally {
@@ -250,8 +258,11 @@
     clearError();
     try {
       const result = await api(`/api/book/${encodeURIComponent(token)}`, { method: "POST", body: JSON.stringify(payload) });
-      const verb = result.moved ? "has moved to" : "is booked for";
-      showDone(`Your meeting ${verb} ${fmtFull(chosen.start)}. A confirmation has been sent to ${payload.email}. This inbox is unattended, so please do not reply to it.`);
+      const who = firstName || payload.first_name;
+      const title = result.moved
+        ? `Hey ${who}, your meeting to review Cutover AI modernization with ${hostName} has moved.`
+        : `Hey ${who}, your meeting to review Cutover AI modernization with ${hostName} is booked.`;
+      showDone(`${fmtFull(chosen.start)}. A confirmation has been sent to ${payload.email}. This inbox is unattended, so please do not reply to it.`, title);
     } catch (err) {
       showError(err.message);
       if (err.status === 409) {
